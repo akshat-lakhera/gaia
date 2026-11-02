@@ -14,7 +14,7 @@ beforeEach(() => {
 });
 afterEach(() => { useNotificationStore.setState({ notifications: [], respondToPermission: originalRespond }); });
 
-it.each(['share_engineering_context', 'append_engineering_context', 'approve_engineering_code', 'allow_path_access'])(
+it.each(['share_engineering_context', 'append_engineering_context', 'approve_engineering_code', 'allow_path_access', 'trust_project_folder'])(
     'shows one-time approval without an always option for %s', async (tool) => {
         useNotificationStore.getState().addNotification({ id: 'decision', type: 'permission_request', agentId: 'session', sessionId: 'session', agentName: 'GAIA', title: 'Review selected context', message: 'Share with configured provider', timestamp: 1, read: false, dismissed: false, priority: 'high', tool, toolArgs: { context: 'private sample' }, alwaysScope: tool });
         render(<PermissionPrompt sessionId="session" />);
@@ -22,7 +22,7 @@ it.each(['share_engineering_context', 'append_engineering_context', 'approve_eng
         expect(screen.getByText('Share with configured provider')).toBeInTheDocument();
         fireEvent.click(screen.getByRole('button', { name: 'Details' }));
         expect(screen.getByText(/private sample/)).toBeInTheDocument();
-        fireEvent.click(screen.getByRole('button', { name: tool === 'allow_path_access' ? 'Allow for this chat' : 'Allow once' }));
+        fireEvent.click(screen.getByRole('button', { name: tool === 'allow_path_access' ? 'Allow for this chat' : tool === 'trust_project_folder' ? 'Trust this folder' : 'Allow once' }));
         await waitFor(() => expect(respond).toHaveBeenCalledWith('decision', 'allow'));
     }
 );

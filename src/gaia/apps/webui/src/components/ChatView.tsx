@@ -8,7 +8,7 @@ import { toolRowText } from './AgentActivity';
 import { agentEventToStep, isProgressTick } from '../utils/streamSteps';
 import { TOOL_CALL_JSON_SAFETY_RE, fromApiMessages, isEchoOfFailedTool, keepFailedReply, onlyFailureAfter, persistedQuestion, policyReceiptAnchor, stripStreamingEnvelope } from '../utils/chatStream';
 import { useChatStore } from '../stores/chatStore';
-import { useNotificationStore, PATH_ACCESS_TOOL, pathAccessQuestion, pathAccessTitle, isPathAccessFollowUp, selectSessionPermissionPrompt } from '../stores/notificationStore';
+import { useNotificationStore, PATH_ACCESS_TOOL, PROJECT_TRUST_TOOL, pathAccessQuestion, pathAccessTitle, isPathAccessFollowUp, selectSessionPermissionPrompt } from '../stores/notificationStore';
 import type { GaiaNotification } from '../types/agent';
 import * as api from '../services/api';
 import { refreshActiveRuns } from '../services/activeRuns';
@@ -776,10 +776,14 @@ export function ChatView({ sessionId }: ChatViewProps) {
                         agentId: sessionId,
                         sessionId,
                         agentName: 'GAIA',
-                        title: isPathAccess ? pathAccessTitle(event.args, followUp) : `Allow ${toolLabel}?`,
+                        title: isPathAccess
+                            ? pathAccessTitle(event.args, followUp)
+                            : toolName === PROJECT_TRUST_TOOL ? "Trust this folder's instructions and skills?" : `Allow ${toolLabel}?`,
                         message: isPathAccess
                             ? pathAccessQuestion(event.args, followUp)
-                            : `GAIA needs your OK before ${toolLabel}.`,
+                            : toolName === PROJECT_TRUST_TOOL
+                                ? "GAIA would put this folder's CLAUDE.md, AGENTS.md and skills in the model's prompt, now and every time you work in it."
+                                : `GAIA needs your OK before ${toolLabel}.`,
                         timestamp: Date.now(),
                         read: false,
                         dismissed: false,

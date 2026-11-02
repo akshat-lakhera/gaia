@@ -9,6 +9,7 @@ import {
     requiresFreshConsent,
     repeatedAllowCount,
     PATH_ACCESS_TOOL,
+    PROJECT_TRUST_TOOL,
     type PermissionDecision,
 } from '../stores/notificationStore';
 import type { GaiaNotification } from '../types/agent';
@@ -186,7 +187,7 @@ function PromptCard({ notification }: { notification: GaiaNotification }) {
                 <ShieldQuestion size={16} className="perm-card-icon" aria-hidden="true" />
                 <div className="perm-card-text">
                     <h2 id={`perm-${notification.id}`} className="perm-card-title">
-                        {notification.tool === PATH_ACCESS_TOOL
+                        {notification.tool === PATH_ACCESS_TOOL || notification.tool === PROJECT_TRUST_TOOL
                             ? notification.title
                             : notification.toolLabel
                                 ? <>Allow {notification.toolLabel}?</>
@@ -234,7 +235,9 @@ function PromptCard({ notification }: { notification: GaiaNotification }) {
                 <div className="perm-card-actions">
                     <button type="button" className="perm-btn is-primary" onClick={() => answer('allow')} disabled={busy}>
                         {/* Granting a path lasts for the chat, as the question says. */}
-                        {notification.tool === PATH_ACCESS_TOOL ? 'Allow for this chat' : 'Allow once'}
+                        {notification.tool === PROJECT_TRUST_TOOL
+                            ? 'Trust this folder'
+                            : notification.tool === PATH_ACCESS_TOOL ? 'Allow for this chat' : 'Allow once'}
                     </button>
                     {scope && (
                         <button
